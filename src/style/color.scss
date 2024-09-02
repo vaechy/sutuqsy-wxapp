@@ -1,0 +1,37 @@
+@use 'sass:list';
+@use 'sass:map';
+$colors: (
+  (#ffffff, #f8f8f8, #ebebeb, #dbdbdb, #cccccc, #999999, #666666, #333333, #000000),
+  (#daf6ef, #b4ecde, #08c193, #228f73, #43d7b2),
+  (#f62f3b, #edc9c9, #f0e2e2, #ffecea, #f78185),
+  (#f2f5f8, #e3e8eb, #c3cace, #a0a6a9),
+  (#ffb739, #dc9e40, #fff5e4),
+  (#fffaf7, #f3cfb9, #debca1, #bd835e, #6b2d00)
+);
+
+@function pad-zero($number) {
+  @if $number < 10 {
+    @return '0#{$number}';
+  } @else {
+    @return $number;
+  }
+}
+
+// 生成ui设计师颜色命名规则: c-xx-xx
+@function generate-colors() {
+  $color-map: ();
+  @for $i from 1 through list.length($colors) {
+    @for $j from 1 through list.length(list.nth($colors, $i)) {
+      $var-name: --c-#{pad-zero($i)}-#{pad-zero($j)};
+      $var-value: list.nth(list.nth($colors, $i), $j);
+      $color-map: map.map-merge(
+        $color-map,
+        (
+          $var-name: $var-value,
+        )
+      );
+    }
+  }
+
+  @return $color-map;
+}

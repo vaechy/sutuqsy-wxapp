@@ -39,7 +39,7 @@
             </wd-col>
 
             <wd-col :span="12">
-              <wd-button :loading="loading" @click="onResolve">立即解析</wd-button>
+              <wd-button :loading="isLoading" @click="onResolve">立即解析</wd-button>
             </wd-col>
           </wd-row>
           <wd-message-box></wd-message-box>
@@ -52,7 +52,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useViewStore } from '@/store/view'
-import { postAnalyzeAPI } from '@/service/index/view'
+import { postAnalyzeAPI, IResData, IReqParams, IViewData } from '@/service/index/view'
 import { useMessage } from 'wot-design-uni'
 
 // defineOptions({
@@ -64,15 +64,6 @@ defineOptions({
   name: 'Home',
 })
 // interfaces
-interface IResViewData {
-  video: string
-  image: string
-}
-interface IReqParams {
-  url: string
-  token: string
-  wxapp_id: string
-}
 // data
 const videoText = ref('')
 
@@ -88,12 +79,11 @@ const message = useMessage()
 const tabbar = ref(2)
 
 const api = 'https://apis.xiaofanmo.site/home/api'
-
 // store
 const viewData = useViewStore()
 // ui
 const loadingStatus = ref(false)
-
+const isLoading = ref(false)
 // util
 function getStrUrl(s) {
   // let reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
@@ -102,35 +92,46 @@ function getStrUrl(s) {
   s = s.match(reg)
   return s && s.length ? s[0] : null
 }
-
 function onResolve() {
   const url = getStrUrl(videoText.value)
-  const { loading, error, data, run } = useRequest<IResViewData>(
-    () => postAnalyzeAPI<IResViewData, IReqParams, any>({ url, token, wxapp_id: wxappId }),
+  const { loading, error, data, run } = useRequest<IResData>(
+    () => postAnalyzeAPI<IResData, IReqParams, any>({ url, token, wxapp_id: wxappId }),
     {
       immediate: false,
       initialData,
     },
   )
-
-  loadingStatus.value = loading.value
-  run().then((res) => {
-    uni.navigateTo({ url: '/pages/view/view' })
-    console.log(res)
-    viewData.setViewData(res)
-  })
-
-  // run({ url, token, wxapp_id: wxappId }).then((res) => {
-  //   uni.navigateTo({ url: '/pages/view/view' })
-  //   console.log(res)
-  // })
+  isLoading.value = true
+  run()
+    .then(
+      (res) => {
+        console.log(res)
+        if (res.code === 0) {
+          uni.showToast({
+            icon: 'error',
+            title: res.msg,
+          })
+        } else if (res.code === 1) {
+          viewData.setViewData(res.data)
+          uni.showToast({
+            icon: 'success',
+            title: res.msg,
+          })
+          uni.navigateTo({ url: '/pages/view/view' })
+        }
+        isLoading.value = false
+      },
+      (error) => {
+        throw error
+      },
+    )
+    .catch(() => {})
+    .finally(() => {})
 }
 
 function onAffix() {
   uni.getClipboardData({
     success: (result) => {
-      console.log(result)
-
       videoText.value = result.data
     },
     fail: (error) => {
@@ -154,6 +155,7 @@ export default {
 .main-title-color {
   color: #d14328;
 }
+
 .banner {
   /* background: #cac531; */
   /* fallback for old browsers */

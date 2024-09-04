@@ -1,5 +1,5 @@
 import { http } from '@/utils/http'
-
+import { Ref } from 'vue'
 /* #ifdef MP-WEIXIN */
 // App端特有的逻辑
 const apiUrl = '/index.php?s=/api/video/getInfo'
@@ -10,10 +10,17 @@ const apiUrl = '/index.php?s=/api/video/getInfo'
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 const apiUrl = '/api/index.php?s=/api/video/getInfo'
 /* #endif */
-export interface IResViewData {
+
+export interface IViewData {
   video: string
   image: string
 }
+export type IResData = {
+  code: number
+  msg: string
+  data: IViewData
+}
+
 export interface IReqParams {
   url: string
   token: string

@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { IResViewData } from '@/service/index/view'
+import { IViewData } from '@/service/index/view'
 const initState = { nickname: '', avatar: '' }
 
 export const useViewStore = defineStore(
   'view',
   () => {
-    const viewDate = ref()
+    const viewDate = ref<IViewData>(null)
 
-    const setViewData = (val: IResViewData) => {
+    const setViewData = (val: IViewData) => {
       viewDate.value = val
     }
 

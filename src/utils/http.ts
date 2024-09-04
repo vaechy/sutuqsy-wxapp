@@ -2,7 +2,7 @@ import { CustomRequestOptions } from '@/interceptors/request'
 
 export const http = <T>(options: CustomRequestOptions) => {
   // 1. 返回 Promise 对象
-  return new Promise<IResData<T>>((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     uni.request({
       ...options,
       dataType: 'json',
@@ -14,29 +14,18 @@ export const http = <T>(options: CustomRequestOptions) => {
         // 状态码 2xx，参考 axios 的设计
         if (res.statusCode >= 200 && res.statusCode < 300) {
           // 2.1 提取核心数据 res.data
-          if ((res.data as IResData<T>).code === 0) {
-            uni.showToast({
-              icon: 'none',
-              title: (res.data as IResData<T>).msg,
-            })
-          } else if ((res.data as IResData<T>).code === 1) {
-            uni.showToast({
-              icon: 'none',
-              title: (res.data as IResData<T>).msg,
-            })
-            resolve(res.data as IResData<T>)
-          }
+          resolve(res.data as T)
         } else if (res.statusCode === 401) {
           // 401错误  -> 清理用户信息，跳转到登录页
           // userStore.clearUserInfo()
           // uni.navigateTo({ url: '/pages/login/login' })
-          reject(res)
+          reject(res.errMsg)
         } else {
           // 其他错误 -> 根据后端错误信息轻提示
           !options.hideErrorToast &&
             uni.showToast({
               icon: 'none',
-              title: (res.data as IResData<T>).msg || '请求错误',
+              title: res.errMsg || '请求错误',
             })
           reject(res)
         }

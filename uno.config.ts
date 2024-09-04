@@ -49,7 +49,7 @@ export default defineConfig({
     // }) as Preset,
   ],
   /**
-   * 自定义快捷语句
+   * 自定义快捷语句 shortcuts 可以让我们把多个 rule 合并为一个简写形式
    * @see https://github.com/unocss/unocss#shortcuts
    */
   shortcuts: [['center', 'flex justify-center items-center']],

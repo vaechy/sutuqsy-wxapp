@@ -16,39 +16,56 @@
               <view class=""><video :src="viewDate.video"></video></view>
             </view>
             <view class="btns center">
-              <wd-button type="info">复制链接</wd-button>
-              <wd-button @click="downVideo(viewDate.video)">下载视频</wd-button>
+              <wd-button @click="onCopyURL(viewDate.video)" type="info">复制链接</wd-button>
+              <wd-button @click="downVideo(viewDate.video)">保存视频</wd-button>
             </view>
           </wd-tab>
         </view>
       </block>
-      <block v-if="viewDate.cover">
+      <block v-if="viewDate.cover && viewDate.video">
         <wd-tab :title="`封面`" name="封面">
-          <view class="h-75 w-65 bg-c-01-01 content center mx-a mb-5">
-            <img class="h-70 w-60" :src="viewDate.cover" alt="" srcset="" />
+          <view class="h-75 w-65 content center mx-a mb-5">
+            <wd-img
+              :enable-preview="true"
+              :width="200"
+              :height="300"
+              :src="viewDate.cover"
+              alt=""
+              srcset=""
+            />
           </view>
 
           <view class="btns center">
-            <wd-button type="info">复制链接</wd-button>
-            <wd-button @click="onDownCover()">下载封面</wd-button>
+            <wd-button @click="onCopyURL(viewDate.cover)" type="info">复制链接</wd-button>
+            <wd-button @click="onDownCover()">保存封面</wd-button>
           </view>
         </wd-tab>
       </block>
       <block v-if="viewDate.images">
         <wd-tab :title="`图集`" name="图集">
           <view class="content">
-            <wd-img
-              v-for="(item, index) in viewDate.images"
-              :key="index"
-              :width="100"
-              :height="100"
-              :src="item"
-              :enable-preview="true"
-            />
+            <view class="card-swiper">
+              <wd-swiper
+                @change="onChanage"
+                :loop="false"
+                :height="380"
+                :autoplay="false"
+                v-model:current="swiperCurrent"
+                custom-indicator-class="custom-indicator-class"
+                custom-image-class="custom-image"
+                :display-multiple-items="1"
+                custom-next-image-class="custom-image-prev"
+                custom-prev-image-class="custom-image-prev"
+                :indicator="{ type: 'dots' }"
+                :list="viewDate.images"
+                previousMargin="24px"
+                nextMargin="24px"
+              ></wd-swiper>
+            </view>
           </view>
           <view class="btns center">
-            <wd-button type="info ">下载单张</wd-button>
-            <wd-button :loading="isLoading" @click="onDownImages()">全部下载</wd-button>
+            <wd-button @click="onDownImage" type="info ">保存单张</wd-button>
+            <wd-button :loading="isLoading" @click="onDownImages()">全部保存</wd-button>
           </view>
         </wd-tab>
       </block>
@@ -56,14 +73,12 @@
         <wd-tab :title="`文案`" :name="`文案`">
           <view class="content my-2">{{ viewDate.title }}</view>
           <view class="btns center">
-            <wd-button type="info">复制文案</wd-button>
+            <wd-button @click="onCopyURL(viewDate.title)" type="info">复制文案</wd-button>
             <!-- <wd-button @click="downVideo">下载文档</wd-button> -->
           </view>
         </wd-tab>
       </block>
     </wd-tabs>
-    <wd-circle v-model="current" :text="`进度：${current}%`"></wd-circle>
-    <wd-message-box></wd-message-box>
   </view>
 
   <!-- <wd-tabs v-model="tab" animated>
@@ -103,14 +118,14 @@ import { useMessage } from 'wot-design-uni'
 import { useViewStore } from '@/store/view'
 // data
 const info = ref({})
-const message = useMessage()
 const { viewDate } = useViewStore()
 console.log(viewDate)
 
 // ui
-const current = ref(0)
-const isLoading = ref(false)
+const swiperCurrent = ref(0)
 
+const isLoading = ref(false)
+let swiperIndex = 0
 uni.getStorage({
   key: 'info',
   success: ({ data }) => {
@@ -237,18 +252,42 @@ const downImage = function (url) {
   //   }
   // }
 }
-const onDownCover = function (url) {
+const onChanage = (current, source) => {
+  // console.log(current, source)
+  swiperIndex = current.current
+}
+const onDownCover = function () {
   downImage(viewDate.cover)
 }
-const onDownImages = async function (url) {
+const onDownImages = async function () {
   isLoading.value = true
   for (const url of viewDate.images) {
-    const tosk = await downImage(url)
+    await downImage(url)
   }
   isLoading.value = false
 }
+const onDownImage = function () {
+  console.log(viewDate)
+  console.log(viewDate[swiperIndex])
 
-const handleClick = (res) => {}
+  downImage(viewDate.images[swiperIndex])
+  console.log(swiperIndex)
+
+  // downImage(viewDate.cover)
+}
+const onCopyURL = function (url) {
+  uni.setClipboardData({
+    data: url,
+    success: (result) => {
+      uni.showToast({
+        title: '复制成功',
+        icon: 'success',
+      })
+    },
+    fail: () => {},
+    complete: () => {},
+  })
+}
 </script>
 
 <style lang="scss">
@@ -264,6 +303,22 @@ const handleClick = (res) => {}
   background-color: #f8f8f8 !important;
 }
 .btns {
-  margin-top: 30rpx;
+  margin-top: 100rpx;
+}
+.card-swiper {
+  --wot-swiper-radius: 0;
+  --wot-swiper-item-padding: 0 24rpx;
+  --wot-swiper-nav-dot-color: #e7e7e7;
+  --wot-swiper-nav-dot-active-color: #4d80f0;
+  padding-bottom: 24rpx;
+  :deep(.custom-indicator-class) {
+    bottom: -16px;
+  }
+  :deep(.custom-image) {
+    border-radius: 12rpx;
+  }
+  :deep(.custom-image-prev) {
+    height: 168px !important;
+  }
 }
 </style>

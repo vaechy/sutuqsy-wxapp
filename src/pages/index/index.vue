@@ -92,7 +92,10 @@ function getStrUrl(s) {
   s = s.match(reg)
   return s && s.length ? s[0] : null
 }
-function onResolve() {
+async function onResolve() {
+  if (videoText.value === '') {
+    const res = await onAffix()
+  }
   const url = getStrUrl(videoText.value)
   const { loading, error, data, run } = useRequest<IResData>(
     () => postAnalyzeAPI<IResData, IReqParams, any>({ url, token, wxapp_id: wxappId }),
@@ -130,13 +133,16 @@ function onResolve() {
 }
 
 function onAffix() {
-  uni.getClipboardData({
-    success: (result) => {
-      videoText.value = result.data
-    },
-    fail: (error) => {
-      message.alert(error)
-    },
+  return new Promise((resolve) => {
+    uni.getClipboardData({
+      success: (result) => {
+        videoText.value = result.data
+        resolve('success')
+      },
+      fail: (error) => {
+        message.alert(error)
+      },
+    })
   })
 }
 

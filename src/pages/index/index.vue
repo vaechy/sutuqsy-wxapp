@@ -2,48 +2,52 @@
 <route lang="json5" type="home">
 {
   style: {
-    navigationStyle: 'custom',
+    navigationBarBackgroundColor: '#eff6ff',
     navigationBarTitleText: '首页',
   },
 }
 </route>
 <template>
-  <!-- <view @touchmove.stop.prevent="() => {}"></view> -->
-  <view class="bg-c-01-02 h-screen bg-blue">
-    <view class="banner h-50 w-screen mb-5"></view>
-    <view class="card">
-      <view>
-        <view class="text-area"></view>
+  <view class="overflow-hidden h-screen px-34rpx bgc">
+    <view class="">
+      <wd-notice-bar
+        text="速图去水印是一款免费去水印工具，干净无广告，支持各大平台视频图片导出"
+        prefix="warn-bold"
+      />
+    </view>
+    <view
+      class="mt-10 bg-blue-200 text-white center w-10 h-5 border-rd-full mb-3 ml-2"
+      @click="clearText"
+    >
+      <span class="text-3">清空</span>
+    </view>
+    <view
+      class="bg-gray-100 border-3/10rpx shadow-md border-rd-2xl mb-48rpx bd-blue-500 h-40 center"
+    >
+      <view class="center overflow-hidden pt-12rpx px-18rpx h-full">
+        <view
+          class="center w-full h-full text-sm placeholder:italic placeholder:text-slate-400 break-all overflow-auto"
+          placeholder=""
+          name=""
+          id=""
+        >
+          {{ URLText }}
+          <view
+            @click="onAffix"
+            v-show="isPastedBtn"
+            class="w-15 h-8 text-white bg-blue-400 center b-rd-10 active:bg-blue-600"
+          >
+            <span>粘贴</span>
+          </view>
+        </view>
       </view>
-      <view class="px-5">
-        <wd-row>
-          <wd-col :span="22">
-            <view class="text-right" @click="clearText">清空</view>
-          </wd-col>
-        </wd-row>
-        <view class="mb-10 mt-2">
-          <wd-row>
-            <wd-col :span="24">
-              <view class="textarea-broder">
-                <wd-textarea border v-model="videoText" placeholder="请在此输入视频(或图集)链接" />
-              </view>
-            </wd-col>
-          </wd-row>
-        </view>
-
-        <view v-if="loadingStatus">loading...</view>
-        <view class="text-center">
-          <wd-row :gutter="0">
-            <wd-col :span="12">
-              <wd-button plain @click="onAffix" type="info">粘贴链接</wd-button>
-            </wd-col>
-
-            <wd-col :span="12">
-              <wd-button :loading="isLoading" @click="onResolve">立即解析</wd-button>
-            </wd-col>
-          </wd-row>
-          <wd-message-box></wd-message-box>
-        </view>
+    </view>
+    <view class="center">
+      <view
+        @click="onResolve"
+        class="center border-rd-full active:bg-blue-600 bg-blue-500 w-full h-12"
+      >
+        <span class="text-white">立即解析</span>
       </view>
     </view>
   </view>
@@ -52,9 +56,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useViewStore } from '@/store/view'
-import { postAnalyzeAPI, IResData, IReqParams, IViewData } from '@/service/index/view'
+import { postAnalyzeAPI, IResData, IReqParams } from '@/service/index/view'
 import { useMessage } from 'wot-design-uni'
-
+import { useHistoryStore } from '@/store/history'
+const { history } = useHistoryStore()
 // defineOptions({
 // 	options: {
 // 		styleIsolation: 'shared'
@@ -65,12 +70,11 @@ defineOptions({
 })
 // interfaces
 // data
-const videoText = ref('')
+const URLText = ref('')
 
 const uid = '704065'
 const key = 'cglnqrsADEKMNQVX18'
-const token = '36b9e262bb7d7426b4addafdb70fb040'
-const wxappId = '10001'
+
 // const url = 'https://v.douyin.com/irGt92KG/'
 
 const initialData = undefined
@@ -84,6 +88,7 @@ const viewData = useViewStore()
 // ui
 const loadingStatus = ref(false)
 const isLoading = ref(false)
+const isPastedBtn = ref(true)
 // util
 function getStrUrl(s) {
   // let reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
@@ -93,18 +98,27 @@ function getStrUrl(s) {
   return s && s.length ? s[0] : null
 }
 async function onResolve() {
-  if (videoText.value === '') {
-    const res = await onAffix()
+  if (URLText.value === '') {
+    // const res = await onAffix()
+    uni.showToast({
+      title: '先去粘贴链接再来解析',
+      icon: 'none',
+    })
+    return
   }
-  const url = getStrUrl(videoText.value)
+  console.log(URLText.value)
+  const url = getStrUrl(URLText.value)
   const { loading, error, data, run } = useRequest<IResData>(
-    () => postAnalyzeAPI<IResData, IReqParams, any>({ url, token, wxapp_id: wxappId }),
+    () => postAnalyzeAPI<IResData, IReqParams, any>({ url }),
     {
       immediate: false,
       initialData,
     },
   )
-  isLoading.value = true
+  uni.showLoading({
+    title: '正在解析',
+    mask: true,
+  })
   run()
     .then(
       (res) => {
@@ -115,12 +129,24 @@ async function onResolve() {
             title: res.msg,
           })
         } else if (res.code === 1) {
-          viewData.setViewData(res.data)
+          uni.hideLoading()
           uni.showToast({
             icon: 'success',
             title: res.msg,
+            duration: 3000,
+            mask: false,
+            success: (result) => {
+              viewData.setViewData(res.data)
+              if (history.length >= 10) {
+                history.pop()
+              }
+              history.unshift({ ...res.data, sourceURL: url })
+              console.log(history)
+              uni.navigateTo({ url: '/pages/view/view' })
+            },
+            fail: () => {},
+            complete: () => {},
           })
-          uni.navigateTo({ url: '/pages/view/view' })
         }
         isLoading.value = false
       },
@@ -133,11 +159,25 @@ async function onResolve() {
 }
 
 function onAffix() {
-  return new Promise((resolve) => {
+  // if (URLText.value === '') {
+  //   uni.showToast({
+  //     title: '剪贴板为空,先去复制链接再来解析',
+  //     icon: 'none',
+  //   })
+  //   return
+  // }
+  return new Promise((resolve, reject) => {
     uni.getClipboardData({
       success: (result) => {
-        videoText.value = result.data
-        resolve('success')
+        if (result.data === '') {
+          uni.showToast({
+            title: '剪切板空空如也，先去复制视频链接再来解析',
+            icon: 'none',
+          })
+        } else {
+          isPastedBtn.value = false
+          URLText.value = result.data
+        }
       },
       fail: (error) => {
         message.alert(error)
@@ -145,9 +185,45 @@ function onAffix() {
     })
   })
 }
+function wxLogin() {
+  console.log('dd')
 
+  uni.login({
+    provider: 'weixin',
+    onlyAuthorize: true, // 微信登录仅请求授权认证
+    success: function (event) {
+      const { code } = event
+      console.log(code)
+      // 客户端成功获取授权临时票据（code）,向业务服务器发起登录请求。
+      //   uni.request({
+      //     url: 'https://www.example.com/loginByWeixin', // 仅为示例，并非真实接口地址。
+      //     data: {
+      //       code: event.code,
+      //     },
+      //     success: (res) => {
+      //       // 获得token完成登录
+      //       uni.setStorageSync('token', res.token)
+      //     },
+      //   })
+    },
+    fail: function (err) {
+      // 登录授权失败
+      // err.code是错误码
+      console.log(err)
+    },
+  })
+}
 function clearText() {
-  videoText.value = ''
+  URLText.value = ''
+  isPastedBtn.value = true
+}
+function getWXCode() {
+  uni.login({
+    provider: 'weixin', // 使用微信登录
+    success: function (loginRes) {
+      console.log(loginRes)
+    },
+  })
 }
 </script>
 <script lang="ts">
@@ -169,5 +245,13 @@ export default {
   /* Chrome 10-25, Safari 5.1-6 */
   /* background: linear-gradient(to right, #f3f9a7, #cac531); */
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+:deep(.wd-textarea__value) {
+  padding-right: 0rpx !important;
+}
+.textarea-sty {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0px 2px 4px rgba(128, 128, 128, 0.25);
 }
 </style>

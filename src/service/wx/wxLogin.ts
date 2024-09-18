@@ -2,32 +2,22 @@ import { http } from '@/utils/http'
 import { Ref } from 'vue'
 /* #ifdef MP-WEIXIN */
 // App端特有的逻辑
-const apiUrl = '/index.php?s=/api/video/getInfo'
+const apiUrl = '/index.php?s=/api/user/login'
 /* #endif */
 
 /* #ifdef H5 */
 // App端特有的逻辑
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-const apiUrl = '/api/index.php?s=/api/video/getInfo'
+const apiUrl = '/api/index.php?s=/api/user/login'
 /* #endif */
-const token = '36b9e262bb7d7426b4addafdb70fb040'
 const wxappId = '10001'
-export interface IViewData {
-  video?: string
-  images?: string
-  title: string
-  cover: string
-}
-export type IResData = {
+export interface IResData {
   code: number
+  data: { token: string }
   msg: string
-  data: IViewData
 }
-
 export interface IReqParams {
-  url: string
-  token?: string
-  wxapp_id?: string
+  code: string
 }
 /** GET 请求 */
 // export const getFooAPI = (name: string) => {
@@ -35,7 +25,7 @@ export interface IReqParams {
 // }
 
 /** POST 请求 */
-export const postAnalyzeAPI = <D, B, Q>(body?: B, query?: any) => {
+export const postGetTokenAPI = <D, B, Q>(body?: B, query?: any) => {
   // App端特有的逻辑
-  return http.post<D>(apiUrl, { ...body, token, wxapp_id: wxappId })
+  return http.post<D>(apiUrl, { ...body, wxapp_id: wxappId })
 }

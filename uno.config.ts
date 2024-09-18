@@ -52,7 +52,17 @@ export default defineConfig({
    * 自定义快捷语句 shortcuts 可以让我们把多个 rule 合并为一个简写形式
    * @see https://github.com/unocss/unocss#shortcuts
    */
-  shortcuts: [['center', 'flex justify-center items-center']],
+  shortcuts: [
+    ['bgc', 'bg-gradient-to-b from-blue-50 to-white'],
+    ['y-center', 'flex items-center'],
+    ['x-center', 'flex justify-center'],
+    ['center', 'flex  justify-center items-center'],
+    [
+      // 边框样式简写 bd-r-1-red => border:1rpx solid color /^(bd)(-[trbl])?(-[0-9]*\.*[0-9]*r*p*x*)*(-.+)$/,
+      /^(bd)(-[trbl])?(-\dr*p*x*)*(-.+)$/,
+      ([, c, d, e, f]) => `border${d || ''}${e || '-1rpx'} border${f} border${d || ''}-solid`,
+    ],
+  ],
   transformers: [
     // 启用 @apply 功能
     transformerDirectives(),

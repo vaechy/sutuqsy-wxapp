@@ -2,12 +2,13 @@
 <route lang="json5">
 {
   style: {
+    navigationBarBackgroundColor: '#eff6ff',
     navigationBarTitleText: '解析成功',
   },
 }
 </route>
 <template>
-  <view class="h-screen view bg-c-01-02">
+  <view class="h-screen view bgc">
     <wd-tabs v-model="tab" @click="handleClick">
       <block v-if="viewDate.video">
         <view class="center">
@@ -15,29 +16,50 @@
             <view class="content">
               <view class=""><video :src="viewDate.video"></video></view>
             </view>
-            <view class="btns center">
-              <wd-button @click="onCopyURL(viewDate.video)" type="info">复制链接</wd-button>
-              <wd-button @click="downVideo(viewDate.video)">保存视频</wd-button>
+            <view class="btns center justify-evenly">
+              <view
+                class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
+                @click="onCopyURL(viewDate.video)"
+              >
+                复制链接
+              </view>
+              <view
+                class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
+                @click="downVideo(viewDate.video)"
+              >
+                保存视频
+              </view>
             </view>
           </wd-tab>
         </view>
       </block>
       <block v-if="viewDate.cover && viewDate.video">
         <wd-tab :title="`封面`" name="封面">
-          <view class="h-75 w-65 content center mx-a mb-5">
+          <view class="content center mx-a mb-5">
             <wd-img
               :enable-preview="true"
-              :width="200"
+              :width="250"
               :height="300"
               :src="viewDate.cover"
               alt=""
               srcset=""
+              mode="aspectFit"
             />
           </view>
 
-          <view class="btns center">
-            <wd-button @click="onCopyURL(viewDate.cover)" type="info">复制链接</wd-button>
-            <wd-button @click="onDownCover()">保存封面</wd-button>
+          <view class="btns center justify-evenly">
+            <view
+              class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
+              @click="onCopyURL(viewDate.cover)"
+            >
+              复制链接
+            </view>
+            <view
+              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
+              @click="onDownCover()"
+            >
+              保存封面
+            </view>
           </view>
         </wd-tab>
       </block>
@@ -63,9 +85,20 @@
               ></wd-swiper>
             </view>
           </view>
-          <view class="btns center">
-            <wd-button @click="onDownImage" type="info ">保存单张</wd-button>
-            <wd-button :loading="isLoading" @click="onDownImages()">全部保存</wd-button>
+          <view class="btns center justify-evenly">
+            <view
+              class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
+              @click="onDownImage"
+            >
+              保存单张
+            </view>
+            <view
+              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
+              :loading="isLoading"
+              @click="onDownImages()"
+            >
+              全部保存
+            </view>
           </view>
         </wd-tab>
       </block>
@@ -73,7 +106,13 @@
         <wd-tab :title="`文案`" :name="`文案`">
           <view class="content my-2">{{ viewDate.title }}</view>
           <view class="btns center">
-            <wd-button @click="onCopyURL(viewDate.title)" type="info">复制文案</wd-button>
+            <view
+              class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
+              @click="onCopyURL(viewDate.title)"
+            >
+              复制文案
+            </view>
+
             <!-- <wd-button @click="downVideo">下载文档</wd-button> -->
           </view>
         </wd-tab>
@@ -116,23 +155,19 @@
 import { ref } from 'vue'
 import { useMessage } from 'wot-design-uni'
 import { useViewStore } from '@/store/view'
+import { useHistoryStore } from '@/store/history'
 // data
 const info = ref({})
 const { viewDate } = useViewStore()
-console.log(viewDate)
+const { history } = useHistoryStore()
 
 // ui
 const swiperCurrent = ref(0)
 
 const isLoading = ref(false)
 let swiperIndex = 0
-uni.getStorage({
-  key: 'info',
-  success: ({ data }) => {
-    info.value = data
-  },
-  fail: () => {},
-})
+// 添加历史记录
+
 const downVideo = function (url) {
   const downloadTask = uni.downloadFile({
     url, // 仅为示例，并非真实的资源
@@ -296,11 +331,11 @@ const onCopyURL = function (url) {
 }
 :deep(.wd-tabs__nav) {
   margin-bottom: 10rpx;
-  background-color: #f8f8f8 !important;
+  background-color: transparent !important;
 }
 :deep(.wd-tabs) {
   margin-bottom: 10rpx;
-  background-color: #f8f8f8 !important;
+  background-color: transparent !important;
 }
 .btns {
   margin-top: 100rpx;

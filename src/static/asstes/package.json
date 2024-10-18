@@ -1,0 +1,19 @@
+{
+  "name": "wot-design-uni-assets",
+  "version": "1.0.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moonofweisheng/wot-design-uni-assets.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Moonofweisheng/wot-design-uni-assets/issues"
+  },
+  "homepage": "https://github.com/Moonofweisheng/wot-design-uni-assets#readme"
+}

@@ -57,6 +57,8 @@
 import { ref } from 'vue'
 import { useViewStore } from '@/store/view'
 import { postAnalyzeAPI, IResData, IReqParams } from '@/service/index/view'
+import { analyzing } from '@/api/methons'
+
 import { useMessage } from 'wot-design-uni'
 import { useHistoryStore } from '@/store/history'
 const { history } = useHistoryStore()
@@ -97,7 +99,7 @@ function getStrUrl(s) {
   s = s.match(reg)
   return s && s.length ? s[0] : null
 }
-async function onResolve() {
+const onResolve = async () => {
   if (URLText.value === '') {
     // const res = await onAffix()
     uni.showToast({
@@ -106,57 +108,99 @@ async function onResolve() {
     })
     return
   }
-  console.log(URLText.value)
   const url = getStrUrl(URLText.value)
-  const { loading, error, data, run } = useRequest<IResData>(
-    () => postAnalyzeAPI<IResData, IReqParams, any>({ url }),
-    {
-      immediate: false,
-      initialData,
-    },
-  )
   uni.showLoading({
     title: '正在解析',
     mask: true,
   })
-  run()
-    .then(
-      (res) => {
-        console.log(res)
-        if (res.code === 0) {
-          uni.showToast({
-            icon: 'error',
-            title: res.msg,
-          })
-        } else if (res.code === 1) {
-          uni.hideLoading()
-          uni.showToast({
-            icon: 'success',
-            title: res.msg,
-            duration: 3000,
-            mask: false,
-            success: (result) => {
-              viewData.setViewData(res.data)
-              if (history.length >= 10) {
-                history.pop()
-              }
-              history.unshift({ ...res.data, sourceURL: url })
-              console.log(history)
-              uni.navigateTo({ url: '/pages/view/view' })
-            },
-            fail: () => {},
-            complete: () => {},
-          })
-        }
-        isLoading.value = false
-      },
-      (error) => {
-        throw error
-      },
-    )
-    .catch(() => {})
-    .finally(() => {})
+  try {
+    const { data }: any = await analyzing(url)
+    console.log(data)
+
+    if (data.code === 0) {
+      uni.showToast({
+        icon: 'error',
+        title: data.msg,
+      })
+    } else if (data.code === '0001') {
+      uni.hideLoading()
+      uni.showToast({
+        icon: 'success',
+        title: data.msg,
+        duration: 3000,
+        mask: false,
+        success: (result) => {
+          console.log()
+
+          viewData.setViewData(data.data)
+          if (history.length >= 10) {
+            history.pop()
+          }
+          history.unshift({ ...data.data, sourceURL: url })
+          console.log(history)
+          uni.navigateTo({ url: '/pages/view/view' })
+        },
+        fail: () => {},
+        complete: () => {},
+      })
+    }
+  } catch (error) {
+    uni.showToast({
+      title: error,
+    })
+  }
 }
+// async function onResolve1() {
+//   const url = getStrUrl(URLText.value)
+//   const { loading, error, data, run } = useRequest<IResData>(
+//     () => postAnalyzeAPI<IResData, IReqParams, any>({ url }),
+//     {
+//       immediate: false,
+//       initialData,
+//     },
+//   )
+//   uni.showLoading({
+//     title: '正在解析',
+//     mask: true,
+//   })
+//   run()
+//     .then(
+//       (res) => {
+//         console.log(res)
+//         if (res.code === 0) {
+//           uni.showToast({
+//             icon: 'error',
+//             title: res.msg,
+//           })
+//         } else if (res.code === 1) {
+//           uni.hideLoading()
+//           uni.showToast({
+//             icon: 'success',
+//             title: res.msg,
+//             duration: 3000,
+//             mask: false,
+//             success: (result) => {
+//               viewData.setViewData(res.data)
+//               if (history.length >= 10) {
+//                 history.pop()
+//               }
+//               history.unshift({ ...res.data, sourceURL: url })
+//               console.log(history)
+//               uni.navigateTo({ url: '/pages/view/view' })
+//             },
+//             fail: () => {},
+//             complete: () => {},
+//           })
+//         }
+//         isLoading.value = false
+//       },
+//       (error) => {
+//         throw error
+//       },
+//     )
+//     .catch(() => {})
+//     .finally(() => {})
+// }
 
 function onAffix() {
   // if (URLText.value === '') {

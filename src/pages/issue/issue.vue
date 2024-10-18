@@ -34,7 +34,7 @@
           @click="getWXToken"
           class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30"
         >
-          <span class="">刷新token</span>
+          <span>清空缓存</span>
         </view>
       </view>
     </view>
@@ -43,26 +43,14 @@
 
 <script lang="ts" setup>
 import { postGetTokenAPI, IResData, IReqParams } from '@/service/wx/wxLogin'
-const initialData = null
+import { useHistoryStore } from '@/store/history'
+const historyStore = useHistoryStore()
 const getWXToken = () => {
-  uni.login({
-    provider: 'weixin', // 使用微信登录
-    success: function (loginRes) {
-      console.log(loginRes.code)
-      const { run } = useRequest<IResData>(
-        () => postGetTokenAPI<IResData, IReqParams, any>({ code: loginRes.code }),
-        {
-          immediate: false,
-          initialData,
-        },
-      )
-      run().then((res) => {
-        uni.showToast({
-          title: res.msg,
-          icon: 'none',
-        })
-      })
-    },
+  uni.clearStorageSync()
+  historyStore.clearHistory()
+  uni.showToast({
+    title: '缓存已清理',
+    icon: 'none',
   })
 }
 const problemBox = [
@@ -101,14 +89,6 @@ const problemBox = [
       {
         title:
           '视频自带的无法去除哦，如果这个视频在该平台APP直接播放是没有水印的，解析后却有水印请联系管理员',
-      },
-    ],
-  },
-  {
-    problemTitle: '5、提示没有找到用户信息？',
-    problemList: [
-      {
-        title: 'token失效，联系客服重新刷新token即可',
       },
     ],
   },

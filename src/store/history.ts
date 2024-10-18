@@ -20,7 +20,7 @@ export const useHistoryStore = defineStore(
     }
 
     const clearHistory = () => {
-      //   history.value = { ...initState }
+      history.value = initState
     }
     // 一般没有reset需求，不需要的可以删除
     const reset = () => {

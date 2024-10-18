@@ -10,22 +10,22 @@
 <template>
   <view class="h-screen view bgc">
     <wd-tabs v-model="tab" @click="handleClick">
-      <block v-if="viewDate.video">
+      <block v-if="viewDate.type === 1">
         <view class="center">
           <wd-tab :title="`视频`" name="视频">
             <view class="content">
-              <view class=""><video :src="viewDate.video"></video></view>
+              <view class=""><video :src="viewDate.playAddr"></video></view>
             </view>
             <view class="btns center justify-evenly">
               <view
                 class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
-                @click="onCopyURL(viewDate.video)"
+                @click="onCopyURL(viewDate.playAddr)"
               >
                 复制链接
               </view>
               <view
-                class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
-                @click="downVideo(viewDate.video)"
+                class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12 text-light"
+                @click="downVideo(viewDate.playAddr)"
               >
                 保存视频
               </view>
@@ -33,7 +33,7 @@
           </wd-tab>
         </view>
       </block>
-      <block v-if="viewDate.cover && viewDate.video">
+      <block>
         <wd-tab :title="`封面`" name="封面">
           <view class="content center mx-a mb-5">
             <wd-img
@@ -55,7 +55,7 @@
               复制链接
             </view>
             <view
-              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
+              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12 text-light"
               @click="onDownCover()"
             >
               保存封面
@@ -63,7 +63,7 @@
           </view>
         </wd-tab>
       </block>
-      <block v-if="viewDate.images">
+      <block v-if="viewDate.type === 2">
         <wd-tab :title="`图集`" name="图集">
           <view class="content">
             <view class="card-swiper">
@@ -79,7 +79,7 @@
                 custom-next-image-class="custom-image-prev"
                 custom-prev-image-class="custom-image-prev"
                 :indicator="{ type: 'dots' }"
-                :list="viewDate.images"
+                :list="viewDate.pics"
                 previousMargin="24px"
                 nextMargin="24px"
               ></wd-swiper>
@@ -88,12 +88,12 @@
           <view class="btns center justify-evenly">
             <view
               class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
-              @click="onDownImage"
+              @click="onDownImage()"
             >
               保存单张
             </view>
             <view
-              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12"
+              class="center border-rd-full active:bg-blue-600 bg-blue-500 w-30 h-12 text-light"
               :loading="isLoading"
               @click="onDownImages()"
             >
@@ -102,13 +102,13 @@
           </view>
         </wd-tab>
       </block>
-      <block v-if="viewDate.title">
+      <block>
         <wd-tab :title="`文案`" :name="`文案`">
-          <view class="content my-2">{{ viewDate.title }}</view>
+          <view class="content my-2">{{ viewDate.desc }}</view>
           <view class="btns center">
             <view
               class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"
-              @click="onCopyURL(viewDate.title)"
+              @click="onCopyURL(viewDate.desc)"
             >
               复制文案
             </view>
@@ -291,12 +291,12 @@ const onChanage = (current, source) => {
   // console.log(current, source)
   swiperIndex = current.current
 }
-const onDownCover = function () {
-  downImage(viewDate.cover)
+const onDownCover = async function () {
+  return await downImage(viewDate.cover)
 }
 const onDownImages = async function () {
   isLoading.value = true
-  for (const url of viewDate.images) {
+  for (const url of viewDate.pics) {
     await downImage(url)
   }
   isLoading.value = false
@@ -305,7 +305,7 @@ const onDownImage = function () {
   console.log(viewDate)
   console.log(viewDate[swiperIndex])
 
-  downImage(viewDate.images[swiperIndex])
+  downImage(viewDate.pics[swiperIndex])
   console.log(swiperIndex)
 
   // downImage(viewDate.cover)

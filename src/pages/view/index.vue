@@ -9,7 +9,7 @@
 </route>
 <template>
   <view class="h-screen view bgc">
-    <wd-tabs v-model="tab" @click="handleClick">
+    <wd-tabs>
       <block v-if="viewDate.type === 1">
         <view class="center">
           <wd-tab :title="`视频`" name="视频">
@@ -121,34 +121,34 @@
   </view>
 
   <!-- <wd-tabs v-model="tab" animated>
-    <block v-if="info.video">
-      <wd-tab :title="`视频`"> </wd-tab>
-    </block>
-    <block>
-      <wd-tab :title="`封面`">
-        <view class="content"><img :src="info.cover" alt="" srcset="" /></view>
-      </wd-tab>
-    </block>
-    <block v-if="info.images">
-      <wd-tab :title="`图集`">
-        <view class="content">
-          <wd-img
-            v-for="(item, index) in info.images"
-            :key="index"
-            :width="100"
-            :height="100"
-            :src="item"
-            :enable-preview="true"
-          />
-        </view>
-      </wd-tab>
-    </block>
-    <block>
-      <wd-tab :title="`文案`">
-        <view class="content">{{ info.title }}</view>
-      </wd-tab>
-    </block>
-  </wd-tabs> -->
+      <block v-if="info.video">
+        <wd-tab :title="`视频`"> </wd-tab>
+      </block>
+      <block>
+        <wd-tab :title="`封面`">
+          <view class="content"><img :src="info.cover" alt="" srcset="" /></view>
+        </wd-tab>
+      </block>
+      <block v-if="info.images">
+        <wd-tab :title="`图集`">
+          <view class="content">
+            <wd-img
+              v-for="(item, index) in info.images"
+              :key="index"
+              :width="100"
+              :height="100"
+              :src="item"
+              :enable-preview="true"
+            />
+          </view>
+        </wd-tab>
+      </block>
+      <block>
+        <wd-tab :title="`文案`">
+          <view class="content">{{ info.title }}</view>
+        </wd-tab>
+      </block>
+    </wd-tabs> -->
 </template>
 
 <script setup>

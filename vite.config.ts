@@ -77,7 +77,7 @@ export default ({ command, mode }) => {
       },
       UnoCSS(),
       AutoImport({
-        imports: ['vue', 'uni-app'],
+        imports: ['vue', 'uni-app', { 'vue-request': ['useRequest'] }],
         dts: 'src/types/auto-import.d.ts',
         dirs: ['src/hooks'], // 自动导入 hooks
         eslintrc: { enabled: true },

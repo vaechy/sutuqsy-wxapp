@@ -6,6 +6,7 @@ export const http = <T>(options: CustomRequestOptions) => {
     uni.request({
       ...options,
       dataType: 'json',
+      timeout: 5000, // 超时响应5s
       // #ifndef MP-WEIXIN
       responseType: 'json',
       // #endif
@@ -25,18 +26,22 @@ export const http = <T>(options: CustomRequestOptions) => {
           !options.hideErrorToast &&
             uni.showToast({
               icon: 'none',
-              title: res.errMsg || '请求错误',
+              title: '请求错误',
             })
           reject(res)
         }
       },
       // 响应失败
       fail(err) {
-        uni.showToast({
-          icon: 'none',
-          title: '网络错误，换个网络试试',
-        })
-        reject(err)
+        if (err.errMsg === 'request:fail timeout') {
+          uni.showToast({
+            icon: 'none',
+            title: '请求超时',
+          })
+          reject(err)
+        } else {
+          reject(err)
+        }
       },
     })
   })

@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { postGetTokenAPI, IResData, IReqParams } from '@/service/wx/wxLogin'
+import {} from '@/services'
 import { useHistoryStore } from '@/store/history'
 const historyStore = useHistoryStore()
 const getWXToken = () => {

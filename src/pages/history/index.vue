@@ -39,7 +39,7 @@
                 <view class="w-full h-full flex-col">
                   <view>{{ info.desc }}</view>
                   <view>
-                    <wd-tag type="primary" @longpress="onLongPress" plain>
+                    <wd-tag type="primary" @longpress="onLongPress(info.sourceURL)" plain>
                       {{ info.sourceURL }}
                     </wd-tag>
                   </view>
@@ -65,47 +65,53 @@
 import { useHistoryStore } from '@/store/history'
 import { useViewStore } from '@/store/view'
 import searchPng from '@/static/asstes/search.png'
-import { analyzing } from '@/api/methons'
+import { parseService } from '@/services'
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const { history } = useHistoryStore()
 const viewData = useViewStore()
 console.log(history)
 const initialData = null
+const { runAsync, data } = useRequest(parseService)
 const onParse = async (url: string) => {
   uni.showLoading({
     title: '正在解析',
     mask: true,
   })
-  const { data }: any = await analyzing(url)
-  console.log(data)
+  try {
+    await runAsync(url)
+    console.log(data)
 
-  if (data.code === 0) {
-    uni.showToast({
-      icon: 'error',
-      title: data.msg,
-    })
-  } else if (data.code === '0001') {
-    uni.hideLoading()
-    uni.showToast({
-      icon: 'success',
-      title: data.msg,
-      duration: 3000,
-      mask: false,
-      success: (result) => {
-        viewData.setViewData(data.data)
-        uni.navigateTo({ url: '/pages/view/view' })
-      },
-      fail: () => {},
-      complete: () => {},
-    })
-  }
+    if (data.value.code === 0) {
+      uni.showToast({
+        icon: 'error',
+        title: data.value.msg,
+        duration: 5000,
+      })
+    } else if (data.value.code === '0001') {
+      uni.hideLoading()
+      viewData.setViewData(data.value.data)
+      uni.navigateTo({ url: '/pages/view/index' })
+    } else {
+      uni.showToast({
+        title: data.value.message || data.value.msg,
+        icon: 'none',
+        image: '',
+        duration: 1500,
+      })
+    }
+  } catch (error) {}
 }
 // 长按复制
-const onLongPress = () => {
-  uni.showToast({
-    title: '复制链接成功',
-    icon: 'none',
-    duration: 1500,
+const onLongPress = (urlText: string) => {
+  uni.setClipboardData({
+    data: urlText,
+    success: function () {
+      uni.showToast({
+        title: '复制链接成功',
+        icon: 'none',
+        duration: 1500,
+      })
+    },
   })
 }
 </script>

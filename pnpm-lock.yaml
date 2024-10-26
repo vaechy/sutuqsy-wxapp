@@ -11,9 +11,6 @@ importers:
 
   .:
     dependencies:
-      '@alova/adapter-uniapp':
-        specifier: ^2.0.6
-        version: 2.0.6(alova@3.0.17)
       '@dcloudio/uni-app':
         specifier: 3.0.0-alpha-4010520240507001
         version: 3.0.0-alpha-4010520240507001(@dcloudio/types@3.4.8)(postcss@8.4.38)(rollup@4.18.0)(vue@3.4.21(typescript@4.9.5))
@@ -29,6 +26,9 @@ importers:
       '@dcloudio/uni-mp-weixin':
         specifier: 3.0.0-alpha-4010520240507001
         version: 3.0.0-alpha-4010520240507001(postcss@8.4.38)(rollup@4.18.0)(vue@3.4.21(typescript@4.9.5))
+      animate.css:
+        specifier: ^4.1.1
+        version: 4.1.1
       czg:
         specifier: ^1.9.3
         version: 1.9.3
@@ -47,6 +47,9 @@ importers:
       vue:
         specifier: 3.4.21
         version: 3.4.21(typescript@4.9.5)
+      vue-request:
+        specifier: ^2.0.4
+        version: 2.0.4(vue@3.4.21(typescript@4.9.5))
       wot-design-uni:
         specifier: ^1.2.26
         version: 1.2.26(vue@3.4.21(typescript@4.9.5))
@@ -215,14 +218,6 @@ importers:
         version: 1.8.27(typescript@4.9.5)
 
 packages:
-
-  '@alova/adapter-uniapp@2.0.6':
-    resolution: {integrity: sha512-WMZiXl1du8OsSHrn93r+18VkruTws0+n325415ws1IalBM6+qf0E4YVNDC5vJhFWyGpL/gXux8pLCL3/Wn6+YQ==}
-    peerDependencies:
-      alova: ^3.0.16
-
-  '@alova/shared@1.0.5':
-    resolution: {integrity: sha512-/a2Qm+xebQJ1OlIgpslK+UL1J7yhkt1/Mqdq58a22+fSVdANukmUcF4j4w1DF3lxZ04SrqP+2oJprJ8UOvM+9Q==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -2038,9 +2033,8 @@ packages:
   ajv@8.16.0:
     resolution: {integrity: sha512-F0twR8U1ZU67JIEtekUcLkXkoO5mMMmgGD8sK/xUFzJ805jxHQl92hImFAqqXMyMYjSPOyUPAwHYhB72g5sTXw==}
 
-  alova@3.0.17:
-    resolution: {integrity: sha512-rMT4rg2RR2u++X4wSKfUPi4LqK7DeR1X5iokwm2ruRHA8LPBfBhYtX6DXz32dB/7TdvpiUk+QGYosryhRCFrYA==}
-    engines: {node: '>= 18.0.0'}
+  animate.css@4.1.1:
+    resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
 
   ansi-escapes@4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -4424,9 +4418,6 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  rate-limiter-flexible@5.0.3:
-    resolution: {integrity: sha512-lWx2y8NBVlTOLPyqs+6y7dxfEpT6YFqKy3MzWbCy95sTTOhOuxufP2QvRyOHpfXpB9OUJPbVLybw3z3AVAS5fA==}
-
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
@@ -5183,6 +5174,17 @@ packages:
       terser:
         optional: true
 
+  vue-demi@0.14.10:
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-demi@0.14.8:
     resolution: {integrity: sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q==}
     engines: {node: '>=12'}
@@ -5199,6 +5201,16 @@ packages:
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: '>=6.0.0'
+
+  vue-request@2.0.4:
+    resolution: {integrity: sha512-+Tu5rDy6ItF9UdD21Mmbjiq5Pq6NZSN9juH72hNQTMn1whHh4KZPTKWVLK2YS4nzbuEnPs+82G91AA2Fgd93mg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^2.0.0 || >=3.0.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
 
   vue-router@4.3.3:
     resolution: {integrity: sha512-8Q+u+WP4N2SXY38FDcF2H1dUEbYVHVPtPCPZj/GTZx8RCbiB8AtJP9+YIxn4Vs0svMTNQcLIzka4GH7Utkx9xQ==}
@@ -5405,13 +5417,6 @@ packages:
     engines: {HBuilderX: ^3.0.7}
 
 snapshots:
-
-  '@alova/adapter-uniapp@2.0.6(alova@3.0.17)':
-    dependencies:
-      '@alova/shared': 1.0.5
-      alova: 3.0.17
-
-  '@alova/shared@1.0.5': {}
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -8104,10 +8109,7 @@ snapshots:
       require-from-string: 2.0.2
       uri-js: 4.4.1
 
-  alova@3.0.17:
-    dependencies:
-      '@alova/shared': 1.0.5
-      rate-limiter-flexible: 5.0.3
+  animate.css@4.1.1: {}
 
   ansi-escapes@4.3.2:
     dependencies:
@@ -10805,8 +10807,6 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  rate-limiter-flexible@5.0.3: {}
-
   raw-body@2.5.2:
     dependencies:
       bytes: 3.1.2
@@ -11663,6 +11663,10 @@ snapshots:
       sass: 1.77.5
       terser: 5.31.1
 
+  vue-demi@0.14.10(vue@3.4.21(typescript@4.9.5)):
+    dependencies:
+      vue: 3.4.21(typescript@4.9.5)
+
   vue-demi@0.14.8(vue@3.4.21(typescript@4.9.5)):
     dependencies:
       vue: 3.4.21(typescript@4.9.5)
@@ -11679,6 +11683,11 @@ snapshots:
       semver: 7.6.2
     transitivePeerDependencies:
       - supports-color
+
+  vue-request@2.0.4(vue@3.4.21(typescript@4.9.5)):
+    dependencies:
+      vue: 3.4.21(typescript@4.9.5)
+      vue-demi: 0.14.10(vue@3.4.21(typescript@4.9.5))
 
   vue-router@4.3.3(vue@3.4.21(typescript@4.9.5)):
     dependencies:

@@ -76,11 +76,9 @@ declare global {
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
-  const useNavbarWeixin: (typeof import('../hooks/useNavbarWeixin'))['default']
-  const useRequest: typeof import('../hooks/useRequest')['default']
+  const useRequest: typeof import('vue-request')['useRequest']
   const useSlots: typeof import('vue')['useSlots']
   const useUpload: typeof import('../hooks/useUpload')['default']
-  const useUpload2: typeof import('../hooks/useUpload2')['default']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -168,7 +166,7 @@ declare module 'vue' {
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useRequest: UnwrapRef<typeof import('../hooks/useRequest')['default']>
+    readonly useRequest: UnwrapRef<typeof import('vue-request')['useRequest']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useUpload: UnwrapRef<typeof import('../hooks/useUpload')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
@@ -251,7 +249,7 @@ declare module '@vue/runtime-core' {
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useRequest: UnwrapRef<typeof import('../hooks/useRequest')['default']>
+    readonly useRequest: UnwrapRef<typeof import('vue-request')['useRequest']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useUpload: UnwrapRef<typeof import('../hooks/useUpload')['default']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>

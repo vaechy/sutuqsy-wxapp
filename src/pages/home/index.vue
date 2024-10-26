@@ -42,6 +42,7 @@
         </view>
       </view>
     </view>
+
     <view class="center">
       <view
         @click="onResolve"
@@ -56,8 +57,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useViewStore } from '@/store/view'
-import { postAnalyzeAPI, IResData, IReqParams } from '@/service/index/view'
-import { analyzing } from '@/api/methons'
+import { parseService } from '@/services'
 
 import { useMessage } from 'wot-design-uni'
 import { useHistoryStore } from '@/store/history'
@@ -74,31 +74,28 @@ defineOptions({
 // data
 const URLText = ref('')
 
-const uid = '704065'
-const key = 'cglnqrsADEKMNQVX18'
-
-// const url = 'https://v.douyin.com/irGt92KG/'
-
-const initialData = undefined
-
 const message = useMessage()
-const tabbar = ref(2)
 
 const api = 'https://apis.xiaofanmo.site/home/api'
+
 // store
 const viewData = useViewStore()
 // ui
-const loadingStatus = ref(false)
-const isLoading = ref(false)
 const isPastedBtn = ref(true)
+// api
+const { runAsync, data, error } = useRequest(parseService, {
+  onError: (err) => {
+    console.log('onerror', err)
+  },
+})
 // util
 function getStrUrl(s) {
-  // let reg = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|-)+)/g;
   const reg = /(https?|http|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g
 
   s = s.match(reg)
   return s && s.length ? s[0] : null
 }
+
 const onResolve = async () => {
   if (URLText.value === '') {
     // const res = await onAffix()
@@ -109,107 +106,41 @@ const onResolve = async () => {
     return
   }
   const url = getStrUrl(URLText.value)
-  uni.showLoading({
+  if (!url) {
+    uni.showToast({
+      title: '链接有误',
+      icon: 'error',
+    })
+    return
+  }
+  uni.showToast({
     title: '正在解析',
-    mask: true,
+    icon: 'loading',
+    duration: 5000,
   })
   try {
-    const { data }: any = await analyzing(url)
-    console.log(data)
-
-    if (data.code === 0) {
+    await runAsync(url)
+    if (data.value.code === -1) {
       uni.showToast({
-        icon: 'error',
-        title: data.msg,
-      })
-    } else if (data.code === '0001') {
-      uni.hideLoading()
-      uni.showToast({
-        icon: 'success',
-        title: data.msg,
-        duration: 3000,
-        mask: false,
-        success: (result) => {
-          console.log()
-
-          viewData.setViewData(data.data)
-          if (history.length >= 10) {
-            history.pop()
-          }
-          history.unshift({ ...data.data, sourceURL: url })
-          console.log(history)
-          uni.navigateTo({ url: '/pages/view/view' })
+        icon: 'none',
+        title: data.value.msg,
+        success: () => {
+          console.log('xxxxx')
         },
-        fail: () => {},
-        complete: () => {},
       })
+    } else if (data.value.code === '0001') {
+      uni.hideLoading()
+      viewData.setViewData(data.value.data)
+      if (history.length >= 10) {
+        history.pop()
+      }
+      history.unshift({ ...data.value.data, sourceURL: url })
+      uni.navigateTo({ url: '/pages/view/index' })
     }
-  } catch (error) {
-    uni.showToast({
-      title: error,
-    })
-  }
+  } catch (error) {}
 }
-// async function onResolve1() {
-//   const url = getStrUrl(URLText.value)
-//   const { loading, error, data, run } = useRequest<IResData>(
-//     () => postAnalyzeAPI<IResData, IReqParams, any>({ url }),
-//     {
-//       immediate: false,
-//       initialData,
-//     },
-//   )
-//   uni.showLoading({
-//     title: '正在解析',
-//     mask: true,
-//   })
-//   run()
-//     .then(
-//       (res) => {
-//         console.log(res)
-//         if (res.code === 0) {
-//           uni.showToast({
-//             icon: 'error',
-//             title: res.msg,
-//           })
-//         } else if (res.code === 1) {
-//           uni.hideLoading()
-//           uni.showToast({
-//             icon: 'success',
-//             title: res.msg,
-//             duration: 3000,
-//             mask: false,
-//             success: (result) => {
-//               viewData.setViewData(res.data)
-//               if (history.length >= 10) {
-//                 history.pop()
-//               }
-//               history.unshift({ ...res.data, sourceURL: url })
-//               console.log(history)
-//               uni.navigateTo({ url: '/pages/view/view' })
-//             },
-//             fail: () => {},
-//             complete: () => {},
-//           })
-//         }
-//         isLoading.value = false
-//       },
-//       (error) => {
-//         throw error
-//       },
-//     )
-//     .catch(() => {})
-//     .finally(() => {})
-// }
-
+// 获取剪贴板
 function onAffix() {
-  // if (URLText.value === '') {
-  //   uni.showToast({
-  //     title: '剪贴板为空,先去复制链接再来解析',
-  //     icon: 'none',
-  //   })
-  //   return
-  // }
   return new Promise((resolve, reject) => {
     uni.getClipboardData({
       success: (result) => {
@@ -277,7 +208,7 @@ export default {
   },
 }
 </script>
-<style>
+<style lang="scss">
 .main-title-color {
   color: #d14328;
 }

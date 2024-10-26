@@ -82,13 +82,13 @@ import { ref } from 'vue'
 const avatarUrl = ref('https://pic.imgdb.cn/item/66e98982f21886ccc03d512f.png')
 const nickname = ref('请输入昵称')
 const navTutorialPage = () => {
-  uni.navigateTo({ url: '/pages/tutorial/tutorial' })
+  uni.navigateTo({ url: '/pages/tutorial/index' })
 }
 const navIssuePage = () => {
-  uni.navigateTo({ url: '/pages/issue/issue' })
+  uni.navigateTo({ url: '/pages/issue/index' })
 }
 const navHistoryPage = () => {
-  uni.navigateTo({ url: '/pages/history/history' })
+  uni.navigateTo({ url: '/pages/history/index' })
 }
 // 获取设置头像
 const onChooseAvatar = (e) => {

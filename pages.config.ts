@@ -29,7 +29,7 @@ export default defineUniPages({
       {
         iconPath: 'static/tabbar/home.png',
         selectedIconPath: 'static/tabbar/homeHL.png',
-        pagePath: 'pages/index/index',
+        pagePath: 'pages/home/index',
         text: '首页',
       },
       // {
@@ -41,7 +41,7 @@ export default defineUniPages({
       {
         iconPath: 'static/tabbar/my.png',
         selectedIconPath: 'static/tabbar/myHL.png',
-        pagePath: 'pages/user/user',
+        pagePath: 'pages/user/index',
         text: '我的',
       },
     ],

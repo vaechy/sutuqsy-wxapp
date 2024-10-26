@@ -83,18 +83,19 @@
     "bin-wrapper": "npm:bin-wrapper-china"
   },
   "dependencies": {
-    "@alova/adapter-uniapp": "^2.0.6",
     "@dcloudio/uni-app": "3.0.0-alpha-4010520240507001",
     "@dcloudio/uni-app-plus": "3.0.0-alpha-4010520240507001",
     "@dcloudio/uni-components": "3.0.0-alpha-4010520240507001",
     "@dcloudio/uni-h5": "3.0.0-alpha-4010520240507001",
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-4010520240507001",
+    "animate.css": "^4.1.1",
     "czg": "^1.9.3",
     "dayjs": "1.11.10",
     "pinia": "2.0.36",
     "pinia-plugin-persistedstate": "3.2.1",
     "qs": "6.5.3",
     "vue": "3.4.21",
+    "vue-request": "^2.0.4",
     "wot-design-uni": "^1.2.26",
     "z-paging": "^2.7.10"
   },

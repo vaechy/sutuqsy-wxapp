@@ -31,7 +31,7 @@
           </view>
         </view>
         <view
-          @click="getWXToken"
+          @click="onClearCache"
           class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30"
         >
           <span>清空缓存</span>
@@ -45,7 +45,8 @@
 import {} from '@/services'
 import { useHistoryStore } from '@/store/history'
 const historyStore = useHistoryStore()
-const getWXToken = () => {
+// 清空缓存
+const onClearCache = () => {
   uni.clearStorageSync()
   historyStore.clearHistory()
   uni.showToast({

@@ -29,6 +29,23 @@ if (isMp) {
   )
 }
 export default defineConfig({
+  theme: {
+    colors: {
+      // 品牌色
+      brand: '#334155',
+      // 中性色
+      neuter: {
+        50: '#ffffff',
+        100: '#f9fafb',
+        200: '#e5e7eb',
+        300: '#030712',
+        400: '#000000',
+      },
+      // 功能色
+      // 辅助色
+      auxiliary: {},
+    },
+  },
   presets: [
     ...presets,
     // 支持图标，需要搭配图标库，eg: @iconify-json/carbon, 使用 `<button class="i-carbon-sun dark:i-carbon-moon" />`
@@ -58,9 +75,10 @@ export default defineConfig({
     ['x-center', 'flex justify-center'],
     ['center', 'flex  justify-center items-center'],
     [
-      // 边框样式简写 bd-r-1-red => border:1rpx solid color /^(bd)(-[trbl])?(-[0-9]*\.*[0-9]*r*p*x*)*(-.+)$/,
-      /^(bd)(-[trbl])?(-\dr*p*x*)*(-.+)$/,
-      ([, c, d, e, f]) => `border${d || ''}${e || '-1rpx'} border${f} border${d || ''}-solid`,
+      // 简写bd | bd-1rpx |bd-red |bd-x | bd-1-red-x | bd-1-red-500-x
+      /^bd(-\d[a-zA-Z]*)*-*(-[a-zA-Z]{2,})*-*(-\d*)*-*(-[ltrbxy]{1,1})*$/,
+      ([, width, color, colorNumber, direction]) =>
+        `border-solid border-0 border${direction || ''}${width || '-1rpx'} border${color || '-black'}${colorNumber || ''} box-border`,
     ],
   ],
   transformers: [
@@ -86,6 +104,11 @@ export default defineConfig({
     ],
     ['pt-safe', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['pb-safe', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
+    [
+      // 边框样式简写 bd-r-1-red => border:1rpx solid color /^(bd)(-[trbl])?(-[0-9]*\.*[0-9]*r*p*x*)*(-.+)$/,
+      /^(bd)(-[trbl])?(-\dr*p*x*)*(-.+)$/,
+      ([, c, d, e, f]) => `border${d || ''}${e || '-1rpx'} border${f} border${d || ''}-solid`,
+    ],
     [
       /^(text|bg|border)(-.+)?-c-(\d+)-(\d+)$/,
       ([val, type, g1, g2, g3]) => {

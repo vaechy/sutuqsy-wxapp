@@ -65,26 +65,7 @@
       </block>
       <block v-if="viewDate.type === 2">
         <wd-tab :title="`图集`" name="图集">
-          <view class="content">
-            <view class="card-swiper">
-              <wd-swiper
-                @change="onChanage"
-                :loop="false"
-                :height="380"
-                :autoplay="false"
-                v-model:current="swiperCurrent"
-                custom-indicator-class="custom-indicator-class"
-                custom-image-class="custom-image"
-                :display-multiple-items="1"
-                custom-next-image-class="custom-image-prev"
-                custom-prev-image-class="custom-image-prev"
-                :indicator="{ type: 'dots' }"
-                :list="viewDate.pics"
-                previousMargin="24px"
-                nextMargin="24px"
-              ></wd-swiper>
-            </view>
-          </view>
+          <view class="content"></view>
           <view class="btns center justify-evenly">
             <view
               class="center bd-gray-400 border-rd-full active:bg-light-200/100 bg-light-200/0 w-30 h-12"

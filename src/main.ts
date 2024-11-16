@@ -1,9 +1,11 @@
 import 'animate.css'
-import { createSSRApp } from 'vue'
+import Vue, { createSSRApp } from 'vue'
 import App from './App.vue'
 import store from './store'
 import { routeInterceptor, requestInterceptor, prototypeInterceptor } from './interceptors'
 import 'virtual:uno.css'
+import '@/style/loaders.css'
+import shareMixin from '@/shareMixin'
 
 import '@/style/index.scss'
 // main.ts
@@ -20,6 +22,7 @@ export function createApp() {
   app.use(routeInterceptor)
   app.use(requestInterceptor)
   app.use(prototypeInterceptor)
+  app.mixin(shareMixin)
   return {
     app,
   }

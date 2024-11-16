@@ -14,6 +14,6 @@ export const getTest = (name: string) => {
 }
 
 /** POST 请求 */
-export const parseService = (url: string) => {
-  return http.post<Partial<IParseRes>>('/parse', { url })
+export const parseService = <T>(url: string) => {
+  return http.post<T>('/parse', { url })
 }

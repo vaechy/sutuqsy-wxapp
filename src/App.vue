@@ -1,10 +1,30 @@
+<template>
+  <view class="app">test</view>
+</template>
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
+import type { ConfigProviderThemeVars } from 'wot-design-uni'
 
+const themeVars: ConfigProviderThemeVars = {
+  colorTheme: 'red',
+  // badgeColor
+  // buttonPrimaryBgColor: '#07c160',
+  // buttonPrimaryColor: '#07c160',
+}
 onLaunch(() => {
-  console.log('App Launch')
+  const history = uni.getStorageSync('history')
+  if (!history) {
+    uni.setStorage({
+      key: 'history',
+      data: [],
+      success: function () {
+        console.log('创建本地存储成功')
+      },
+    })
+  }
 })
 onShow(() => {
+  console.log(uni.getWindowInfo())
   console.log('App Show')
 })
 onHide(() => {
@@ -17,7 +37,14 @@ onHide(() => {
 button::after {
   border: none;
 }
-
+.wot-theme-light {
+  box-sizing: border-box;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 0 32rpx 32rpx;
+  overflow: hidden;
+  background-color: #fbfbef;
+}
 swiper,
 scroll-view {
   flex: 1;

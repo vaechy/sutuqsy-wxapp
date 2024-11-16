@@ -1,63 +1,58 @@
 <route lang="json5">
 {
   style: {
-    disableScroll: true,
-    navigationBarBackgroundColor: '#eff6ff',
+    disableScroll: false,
+    navigationBarBackgroundColor: '#334155',
     navigationBarTitleText: '历史记录',
   },
 }
 </route>
 <template>
-  <view>
+  <view class="text-[12px] px-2 pt-2 text-center">
     <view v-if="history.length === 0">
-      <view class="bgc h-full"><wd-status-tip :image="searchPng" tip="暂无历史内容" /></view>
+      <view>历史记录储存在本地,且最多支持10条记录</view>
+      <view><wd-status-tip :image="searchPng" tip="暂无历史内容" /></view>
     </view>
     <view v-else-if="history.length > 0">
-      <scroll-view
-        scroll-y="true"
-        class="w-full h-screen"
-        :enhanced="true"
-        :bounces="false"
-        :show-scrollbar="false"
-      >
-        <view class="bgc h-full pt-2">
-          <view v-for="(info, index) in history" :key="index">
-            <wd-card title="">
-              <view class="center">
-                <view class="h-full w-20 mr-2">
-                  <wd-img
-                    :width="50"
-                    :height="50"
-                    :src="info.cover"
-                    alt=""
-                    srcset=""
-                    mode="aspectFit"
-                    :enable-preview="true"
-                  ></wd-img>
-                </view>
-
-                <view class="w-full h-full flex-col">
-                  <view>{{ info.desc }}</view>
-                  <view>
-                    <wd-tag type="primary" @longpress="onLongPress(info.sourceURL)" plain>
-                      {{ info.sourceURL }}
-                    </wd-tag>
-                  </view>
+      <view class="h-full pt-2">
+        <view v-for="(info, index) in history" :key="index" class="bd-neuter-200-b mb-2">
+          <view>
+            <view class="w-full h-full flex-col mb-2 text-left">
+              <view>{{ info.desc }}</view>
+              <view class="my-2 text-left">
+                <view class="bd-brand inline-block px-2" @longpress="onCopyText(info.sourceURL)">
+                  {{ info.sourceURL }}
                 </view>
               </view>
-
-              <template #footer>
-                <wd-button @click="onParse(info.sourceURL)" size="small" plain>立即解析</wd-button>
-              </template>
-            </wd-card>
+              <view class="center text-[12] justify-end">
+                <view
+                  @click="onCopyText(info.sourceURL)"
+                  class="bd-brand border-rd active:bg-neuter-50 py-[4rpx] text-brand leading-5 px-2"
+                >
+                  复制链接
+                </view>
+                <view
+                  @click="onDelList(index)"
+                  :class="{ 'pointer-events-none': isDisabledSave }"
+                  class="bd-red-600 border-rd active:text-neuter-200 bg-red-600 py-[4rpx] text-neuter-50 leading-5 px-2 text-align-center mx-2"
+                >
+                  删除记录
+                </view>
+              </view>
+            </view>
           </view>
-          <view>
-            <wd-divider>历史记录储存在本地，且最多支持10条记录</wd-divider>
-          </view>
-          <view :style="{ height: `${safeAreaInsets.bottom}rpx` }"></view>
         </view>
-        <!-- 主要是用 scroll-view 标签包裹住内容  -->
-      </scroll-view>
+        <view class="mt-1">
+          <view
+            @click="onDelList()"
+            :class="{ 'pointer-events-none': isDisabledSave }"
+            class="bd-red-600 border-rd active:text-neuter-200 bg-red-600 py-[4rpx] text-neuter-50 text-lg px-2 text-align-center mx-5"
+          >
+            删除所有记录
+          </view>
+        </view>
+      </view>
+      <!-- 主要是用 scroll-view 标签包裹住内容  -->
     </view>
   </view>
 </template>
@@ -67,42 +62,23 @@ import { useViewStore } from '@/store/view'
 import searchPng from '@/static/asstes/search.png'
 import { parseService } from '@/services'
 const { safeAreaInsets } = uni.getSystemInfoSync()
-const { history } = useHistoryStore()
+// const { history } = useHistoryStore()
 const viewData = useViewStore()
-console.log(history)
 const initialData = null
-const { runAsync, data } = useRequest(parseService)
-const onParse = async (url: string) => {
-  uni.showLoading({
-    title: '正在解析',
-    mask: true,
-  })
-  try {
-    await runAsync(url)
-    console.log(data)
+// const { runAsync, data } = useRequest(parseService)
+const history = ref([])
+const componentKey = ref(1)
+// 获取历史
+onShow(() => {
+  updateStorage()
+})
 
-    if (data.value.code === 0) {
-      uni.showToast({
-        icon: 'error',
-        title: data.value.msg,
-        duration: 5000,
-      })
-    } else if (data.value.code === '0001') {
-      uni.hideLoading()
-      viewData.setViewData(data.value.data)
-      uni.navigateTo({ url: '/pages/view/index' })
-    } else {
-      uni.showToast({
-        title: data.value.message || data.value.msg,
-        icon: 'none',
-        image: '',
-        duration: 1500,
-      })
-    }
-  } catch (error) {}
+function onTabItemTap(e) {
+  console.log(e)
+  // e的返回格式为json对象： {"index":0,"text":"首页","pagePath":"pages/index/index"}
 }
 // 长按复制
-const onLongPress = (urlText: string) => {
+const onCopyText = (urlText: string) => {
   uni.setClipboardData({
     data: urlText,
     success: function () {
@@ -114,4 +90,58 @@ const onLongPress = (urlText: string) => {
     },
   })
 }
+const refreshPage = () => {
+  componentKey.value = componentKey.value++ // 改变key以触发重新渲染
+}
+
+const updateStorage = () => {
+  uni.getStorage({
+    key: 'history',
+    success: (result) => {
+      history.value = result.data
+    },
+    fail: () => {},
+    complete: () => {},
+  })
+}
+
+// 删除记录
+const onDelList = (index) => {
+  if (typeof index === 'number') {
+    history.value.splice(index, 1)
+    console.log(index)
+    uni.setStorage({
+      key: 'history',
+      data: history.value,
+      success: (result) => {},
+    })
+  } else {
+    uni.showModal({
+      title: '是否清空所有记录',
+      content: '',
+      showCancel: true,
+      cancelText: '取消',
+      cancelColor: '#000000',
+      confirmText: '确定',
+      confirmColor: '#3CC51F',
+      success: (result) => {
+        if (result.confirm) {
+          uni.setStorage({
+            key: 'history',
+            data: [],
+            success: (result) => {
+              history.value = []
+              uni.showToast({
+                title: '清空记录成功',
+                icon: 'success',
+                duration: 1000,
+              })
+            },
+          })
+        }
+      },
+    })
+  }
+}
 </script>
+<style lang="scss"></style>

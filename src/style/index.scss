@@ -10,15 +10,14 @@
 
 :root,
 page {
-  --animate-duration: 1s;
-  --animate-delay: 1s;
-  --animate-repeat: 1;
+  // --animate-duration: 1s;
+  // --animate-delay: 1s;
+  // --animate-repeat: 1;
   @each $key, $value in generate-colors() {
     #{$key}: $value;
   }
   // 修改按主题色
-  // --wot-color-theme: #37c2bc;
-
+  // --wot-color-theme: #;
   // 修改按钮背景色
   // --wot-button-primary-bg-color: green;
 }

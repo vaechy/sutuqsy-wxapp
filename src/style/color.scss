@@ -1,5 +1,9 @@
 @use 'sass:map';
 @use 'sass:list';
+$themeColors: #0c0a09;
+$neutralColors: #0c0a09;
+$functionalColors: #0c0a09;
+$auxiliaryColor: #0c0a09;
 $colors: (
   (#ffffff, #f8f8f8, #ebebeb, #dbdbdb, #cccccc, #999999, #666666, #333333, #000000),
   (#daf6ef, #b4ecde, #08c193, #228f73, #43d7b2),
